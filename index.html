@@ -3,15 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="favicon.png">
 <title>Pensar Gigante · Comercial</title>
 <style>
   *{box-sizing:border-box}
-  body{margin:0;background:#f7f6f3;color:#1f2a30;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;-webkit-font-smoothing:antialiased}
+  body{margin:0;background:#BE9CCF;color:#1f2a30;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;-webkit-font-smoothing:antialiased}
   .wrap{max-width:1200px;margin:0 auto;padding:24px 20px 40px}
   header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:20px}
   h1{font-size:24px;margin:0;font-weight:700;letter-spacing:-.4px;color:#2d6a7f}
-  h1 span{color:#9aa6ab;font-weight:500}
-  #scope{margin:6px 0 0;font-size:13px;color:#6b7280}
+  h1 span{color:#5b3f68;font-weight:500}
+  .brand{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .brand .logo{height:48px;width:auto;display:block}
+  #scope{margin:6px 0 0;font-size:13px;color:#5b3f68}
   .stampwrap{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
   .stamp{font-size:11.5px;color:#9aa6ab;background:#fff;border:1px solid #ececec;border-radius:8px;padding:6px 10px;white-space:nowrap}
   .refresh{border:1px solid #2d6a7f;background:#2d6a7f;color:#fff;font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;display:flex;align-items:center;gap:7px;transition:.15s}
@@ -34,7 +37,12 @@
   .ptitle .fx{font-size:10px;font-weight:700;text-transform:none;letter-spacing:0;color:#8a6d3b;background:#faf3e2;border:1px solid #ecdcب;border-radius:20px;padding:2px 9px}
 
   .kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:13px}
+  .kpis-big{display:grid;grid-template-columns:1fr 1fr;gap:13px}
   .card{background:#fff;border:1px solid #ececec;border-radius:14px;padding:15px 15px 16px;display:flex;flex-direction:column;gap:7px}
+  .card.big{padding:22px 24px 26px}
+  .card.big .val{font-size:42px}
+  .card.big .label{font-size:12.5px}
+  @media(max-width:640px){.kpis-big{grid-template-columns:1fr}}
   .ctop{display:flex;justify-content:space-between;align-items:center;gap:8px}
   .label{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#7a868c;font-weight:700}
   .badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap}
@@ -65,7 +73,7 @@
 
   .state{padding:60px 20px;text-align:center;color:#7a868c;font-size:14px}
   .state.err{color:#b83232}
-  footer{font-size:11px;color:#b3bcc0;text-align:center;margin-top:8px}
+  footer{font-size:11px;color:#6b4c78;text-align:center;margin-top:8px}
   @media(max-width:520px){h1{font-size:20px}.filters{gap:16px}}
 </style>
 </head>
@@ -73,7 +81,10 @@
 <div class="wrap">
   <header>
     <div class="htitle">
-      <h1>Pensar Gigante <span>· Comercial</span></h1>
+      <div class="brand">
+        <img src="logo.png" alt="Pensar Gigante" class="logo">
+        <h1><span>· Comercial</span></h1>
+      </div>
       <p id="scope">Carregando…</p>
     </div>
     <div class="stampwrap">
@@ -115,6 +126,8 @@
     <section class="panel">
       <div class="ptitle">Indicadores</div>
       <div class="kpis" id="kpis"></div>
+      <div class="kpis" id="kpis2" style="margin-top:13px"></div>
+      <div class="kpis-big" id="kpis3" style="margin-top:13px"></div>
     </section>
 
     <section class="panel">
@@ -200,7 +213,7 @@ function ingest(data) {
   });
   allSales = (data.sales || []).map(function (s) {
     var d = parseISO(s.date);
-    return { closer: s.closer, month: s.month || (d ? d.getMonth() + 1 : 0), year: d ? d.getFullYear() : META_YEAR, date: d, wk: d ? weekKeyOf(d) : '', valor: +s.valor || 0 };
+    return { closer: s.closer, month: s.month || (d ? d.getMonth() + 1 : 0), year: d ? d.getFullYear() : META_YEAR, date: d, wk: d ? weekKeyOf(d) : '', valor: +s.valor || 0, cash: +s.cash || 0 };
   });
   metaMap = {};
   var m = data.metas || {};
@@ -298,7 +311,7 @@ function card(o) {
   var col = o.status === 'good' ? GREEN : (o.status === 'bad' ? RED : PRIM);
   var w = Math.max(0, Math.min(100, (o.progress || 0) * 100));
   var bar = o.noBar ? '' : '<div class="bar"><i style="width:' + w + '%;background:' + col + '"></i></div>';
-  return '<div class="card"><div class="ctop"><span class="label">' + o.label + '</span>' +
+  return '<div class="card' + (o.big ? ' big' : '') + '"><div class="ctop"><span class="label">' + o.label + '</span>' +
     '<span class="badge ' + bclass + '">' + btext + '</span></div>' +
     '<div class="val">' + o.value + '</div><div class="sub">' + (o.sub || '') + '</div>' + bar + '</div>';
 }
@@ -320,6 +333,9 @@ function render() {
   var sqlAvg = sql / (nDays * nCl);
   var nsRate = pct(noshow, agend);
 
+  var cash = filteredSales().reduce(function (a, s) { return a + (s.cash || 0); }, 0);
+
+  /* fileira 1 · funil */
   var cards = [];
   cards.push(card({ label: 'Leads', value: fmtInt(leads), sub: 'total no período', status: 'neutral', badge: 'sem meta', noBar: true }));
   cards.push(card({ label: 'SQL', value: fmtInt(sql), sub: sqlAvg.toFixed(1) + '/closer/dia · meta 20', status: sqlAvg >= 20 ? 'good' : 'bad', progress: sqlAvg / 20 }));
@@ -328,10 +344,20 @@ function render() {
   cards.push(rateCard('Reuniões Agendadas', agend, sessoes, 50, 'sessões'));
   cards.push(rateCard('Reuniões Realizadas', realiz, agend, 80, 'agendadas'));
   cards.push(card({ label: 'No Show', value: fmtPct(nsRate), sub: fmtInt(noshow) + ' de ' + fmtInt(agend) + ' agendadas', status: nsRate == null ? 'neutral' : (nsRate <= 20 ? 'good' : 'bad'), badge: nsRate == null ? '—' : (nsRate <= 20 ? 'no alvo' : 'acima'), progress: nsRate == null ? 0 : nsRate / 20 }));
-  cards.push(card({ label: 'Vendas (qtd)', value: fmtInt(vendas), sub: meta.defined ? ('meta ' + fmtInt(meta.vol)) : 'meta não definida', status: meta.defined ? (vendas >= meta.vol ? 'good' : 'bad') : 'neutral', badge: meta.defined ? undefined : '—', progress: meta.defined && meta.vol ? vendas / meta.vol : 0 }));
-  cards.push(card({ label: 'Valor Vendas', value: fmtBRLbig(valor), sub: meta.defined ? ('meta ' + fmtBRLbig(meta.fat)) : 'meta não definida', status: meta.defined ? (valor >= meta.fat ? 'good' : 'bad') : 'neutral', badge: meta.defined ? undefined : '—', progress: meta.defined && meta.fat ? valor / meta.fat : 0 }));
-  cards.push(rateCard('Conv. por Reunião', vendas, realiz, 25, 'realizadas'));
   document.getElementById('kpis').innerHTML = cards.join('');
+
+  /* fileira 2 · vendas e conversões */
+  var cards2 = [];
+  cards2.push(card({ label: 'Vendas (qtd)', value: fmtInt(vendas), sub: meta.defined ? ('meta ' + fmtInt(meta.vol)) : 'meta não definida', status: meta.defined ? (vendas >= meta.vol ? 'good' : 'bad') : 'neutral', badge: meta.defined ? undefined : '—', progress: meta.defined && meta.vol ? vendas / meta.vol : 0 }));
+  cards2.push(rateCard('Conv. por SQL', vendas, sql, 6, 'SQL'));
+  cards2.push(rateCard('Conv. por Reunião', vendas, realiz, 25, 'realizadas'));
+  document.getElementById('kpis2').innerHTML = cards2.join('');
+
+  /* fileira 3 · faturamento, big numbers */
+  var cards3 = [];
+  cards3.push(card({ label: 'Valor Vendas', value: fmtBRLbig(valor), sub: meta.defined ? ('meta ' + fmtBRLbig(meta.fat)) : 'meta não definida', status: meta.defined ? (valor >= meta.fat ? 'good' : 'bad') : 'neutral', badge: meta.defined ? undefined : '—', progress: meta.defined && meta.fat ? valor / meta.fat : 0, big: true }));
+  cards3.push(card({ label: 'Cash Collected', value: fmtBRLbig(cash), sub: 'total no período', status: 'neutral', badge: 'sem meta', noBar: true, big: true }));
+  document.getElementById('kpis3').innerHTML = cards3.join('');
 
   renderPerf(rows);
   renderTicket();
