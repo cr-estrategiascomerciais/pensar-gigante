@@ -25,7 +25,7 @@
   @keyframes sp{to{transform:rotate(360deg)}}
   .filters{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-end;margin-bottom:22px}
   .fgroup{display:flex;flex-direction:column;gap:6px}
-  .flabel{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:#9aa6ab;font-weight:600}
+  .flabel{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:#5b3f68;font-weight:600}
   .pills{display:flex;gap:6px;background:#fff;border:1px solid #ececec;border-radius:10px;padding:4px}
   .pill{border:0;background:transparent;padding:7px 14px;border-radius:7px;font-size:13px;font-weight:600;color:#6b7280;cursor:pointer;transition:.15s}
   .pill:hover{color:#2d6a7f}
@@ -33,7 +33,7 @@
   select{appearance:none;background:#fff;border:1px solid #ececec;border-radius:10px;padding:9px 32px 9px 13px;font-size:13px;font-weight:600;color:#1f2a30;cursor:pointer;min-width:170px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 11px center}
 
   .panel{border:1px solid #e2e0d9;border-radius:16px;padding:16px 18px 22px;margin-bottom:20px}
-  .ptitle{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:#9aa6ab;margin:0 0 16px;display:flex;align-items:center;gap:8px}
+  .ptitle{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:#5b3f68;margin:0 0 16px;display:flex;align-items:center;gap:8px}
   .ptitle .fx{font-size:10px;font-weight:700;text-transform:none;letter-spacing:0;color:#8a6d3b;background:#faf3e2;border:1px solid #ecdcب;border-radius:20px;padding:2px 9px}
 
   .kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:13px}
@@ -55,7 +55,7 @@
   .bar i{display:block;height:100%;border-radius:6px;transition:width .4s ease}
 
   h2{font-size:15px;font-weight:700;color:#2d6a7f;margin:0 0 12px}
-  h2 small{font-weight:500;color:#9aa6ab;font-size:12px}
+  h2 small{font-weight:500;color:#5b3f68;font-size:12px}
   .tscroll{overflow-x:auto;background:#fff;border:1px solid #ececec;border-radius:14px}
   table{border-collapse:collapse;width:100%;font-size:12.5px;min-width:640px}
   th,td{padding:10px 12px;text-align:right;white-space:nowrap}
@@ -342,12 +342,12 @@ function render() {
   cards.push(rateCard('Contactados', cont, sql, 95, 'SQL'));
   cards.push(rateCard('Sessões Abertas', sessoes, cont, 60, 'contatos'));
   cards.push(rateCard('Reuniões Agendadas', agend, sessoes, 50, 'sessões'));
-  cards.push(rateCard('Reuniões Realizadas', realiz, agend, 80, 'agendadas'));
-  cards.push(card({ label: 'No Show', value: fmtPct(nsRate), sub: fmtInt(noshow) + ' de ' + fmtInt(agend) + ' agendadas', status: nsRate == null ? 'neutral' : (nsRate <= 20 ? 'good' : 'bad'), badge: nsRate == null ? '—' : (nsRate <= 20 ? 'no alvo' : 'acima'), progress: nsRate == null ? 0 : nsRate / 20 }));
   document.getElementById('kpis').innerHTML = cards.join('');
 
-  /* fileira 2 · vendas e conversões */
+  /* fileira 2 · fechamento do funil + vendas e conversões */
   var cards2 = [];
+  cards2.push(rateCard('Reuniões Realizadas', realiz, agend, 80, 'agendadas'));
+  cards2.push(card({ label: 'No Show', value: fmtPct(nsRate), sub: fmtInt(noshow) + ' de ' + fmtInt(agend) + ' agendadas', status: nsRate == null ? 'neutral' : (nsRate <= 20 ? 'good' : 'bad'), badge: nsRate == null ? '—' : (nsRate <= 20 ? 'no alvo' : 'acima'), progress: nsRate == null ? 0 : nsRate / 20 }));
   cards2.push(card({ label: 'Vendas (qtd)', value: fmtInt(vendas), sub: meta.defined ? ('meta ' + fmtInt(meta.vol)) : 'meta não definida', status: meta.defined ? (vendas >= meta.vol ? 'good' : 'bad') : 'neutral', badge: meta.defined ? undefined : '—', progress: meta.defined && meta.vol ? vendas / meta.vol : 0 }));
   cards2.push(rateCard('Conv. por SQL', vendas, sql, 6, 'SQL'));
   cards2.push(rateCard('Conv. por Reunião', vendas, realiz, 25, 'realizadas'));
